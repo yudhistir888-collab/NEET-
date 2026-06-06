@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NEET Rankings 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0c10;
+    --bg2: #111318;
+    --bg3: #181c24;
+    --surface: #1e2330;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0f2f7;
+    --muted: #7a8299;
+    --accent: #4ade80;
+    --accent2: #22d3ee;
+    --accent3: #f59e0b;
+    --gold: #fbbf24;
+    --silver: #94a3b8;
+    --bronze: #cd7f32;
+    --danger: #f87171;
+    --rank-glow: rgba(74,222,128,0.15);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+
+  /* ── HEADER ── */
+  header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .header-left .label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    line-height: 1;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  header h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .header-meta {
+    font-size: 13px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    text-align: right;
+  }
+
+  .header-meta strong { color: var(--text); display: block; font-size: 16px; font-family: 'Manrope', sans-serif; font-weight: 700; }
+
+  /* ── STATS ROW ── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px;
+    margin: 2rem 0;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .stat {
+    background: var(--bg2);
+    padding: 1.25rem 1.5rem;
+    transition: background 0.2s;
+  }
+
+  .stat:hover { background: var(--bg3); }
+
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 0.4rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text);
+  }
+
+  .stat-value.green { color: var(--accent); }
+  .stat-value.cyan  { color: var(--accent2); }
+  .stat-value.amber { color: var(--accent3); }
+
+  /* ── FILTERS ── */
+  .filters {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+  }
+
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #0a0c10; font-weight: 700; }
+
+  .search-wrap { margin-left: auto; position: relative; }
+
+  .search-wrap input {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    padding: 7px 12px 7px 34px;
+    outline: none;
+    width: 200px;
+    transition: border-color 0.2s;
+  }
+
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-wrap input::placeholder { color: var(--muted); }
+
+  .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 14px;
+    pointer-events: none;
+  }
+
+  /* ── PODIUM (top 3) ── */
+  .podium {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .podium-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem 1.25rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+    cursor: default;
+  }
+
+  .podium-card:hover { transform: translateY(-3px); }
+
+  .podium-card.rank-1 {
+    border-color: rgba(251,191,36,0.4);
+    box-shadow: 0 0 40px rgba(251,191,36,0.08);
+    grid-row: 1;
+  }
+
+  .podium-card.rank-2 { border-color: rgba(148,163,184,0.3); margin-top: 20px; }
+  .podium-card.rank-3 { border-color: rgba(205,127,50,0.3); margin-top: 40px; }
+
+  .podium-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .rank-1::before { background: linear-gradient(90deg, var(--gold), #f59e0b); }
+  .rank-2::before { background: var(--silver); }
+  .rank-3::before { background: var(--bronze); }
+
+  .podium-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-weight: 800;
+    font-size: 16px;
+    margin-bottom: 0.75rem;
+  }
+
+  .rank-1 .podium-badge { background: rgba(251,191,36,0.15); color: var(--gold); border: 1px solid rgba(251,191,36,0.3); }
+  .rank-2 .podium-badge { background: rgba(148,163,184,0.12); color: var(--silver); border: 1px solid rgba(148,163,184,0.3); }
+  .rank-3 .podium-badge { background: rgba(205,127,50,0.12); color: var(--bronze); border: 1px solid rgba(205,127,50,0.3); }
+
+  .podium-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 20px;
+    margin: 0 auto 0.75rem;
+  }
+
+  .podium-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .podium-city {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 0.75rem;
+  }
+
+  .podium-score {
+    font-size: 28px;
+    font-weight: 800;
+    font-family: 'DM Serif Display', serif;
+  }
+
+  .rank-1 .podium-score { color: var(--gold); }
+  .rank-2 .podium-score { color: var(--silver); }
+  .rank-3 .podium-score { color: var(--bronze); }
+
+  .podium-pct {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-top: 2px;
+  }
+
+  /* ── RANKING TABLE ── */
+  .table-head {
+    display: grid;
+    grid-template-columns: 60px 1fr 110px 110px 100px 90px;
+    gap: 0;
+    padding: 10px 16px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .rank-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 110px 110px 100px 90px;
+    gap: 0;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    transition: background 0.15s;
+    cursor: default;
+  }
+
+  .rank-row:hover { background: var(--bg3); }
+
+  .rank-row.highlight {
+    background: rgba(74,222,128,0.04);
+    border-color: rgba(74,222,128,0.1);
+  }
+
+  .rank-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .rank-num.top { color: var(--text); font-weight: 700; }
+
+  .rank-person { display: flex; align-items: center; gap: 10px; }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .state { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  .score-cell {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .percentile-cell {
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    color: var(--accent2);
+  }
+
+  .category-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .cat-gen  { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+  .cat-obc  { background: rgba(251,191,36,0.12); color: var(--gold); }
+  .cat-sc   { background: rgba(74,222,128,0.12); color: var(--accent); }
+  .cat-st   { background: rgba(244,114,182,0.12); color: #f9a8d4; }
+  .cat-ews  { background: rgba(34,211,238,0.12); color: var(--accent2); }
+
+  .change-cell { font-size: 12px; font-family: 'DM Mono', monospace; }
+  .up   { color: var(--accent); }
+  .down { color: var(--danger); }
+  .same { color: var(--muted); }
+
+  .table-wrap {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  /* ── SCORE BAR ── */
+  .bar-outer {
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+
+  .bar-inner {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+  }
+
+  /* ── SUBJECT BREAKDOWN ── */
+  .breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 2rem;
+  }
+
+  .breakdown-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .breakdown-title {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 1rem;
+  }
+
+  .subject-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .subject-name { font-size: 13px; color: var(--text); flex: 1; font-weight: 500; }
+  .subject-score { font-size: 13px; font-family: 'DM Mono', monospace; color: var(--muted); min-width: 55px; text-align: right; }
+
+  .subj-bar-outer {
+    flex: 2;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .subj-bar { height: 100%; border-radius: 6px; }
+  .bio { background: var(--accent); }
+  .chem { background: var(--accent2); }
+  .phys { background: var(--accent3); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  footer p {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .tag {
+    font-size: 11px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    padding: 3px 10px;
+    border-radius: 100px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 720px) {
+    .podium { grid-template-columns: 1fr; }
+    .podium-card.rank-2, .podium-card.rank-3 { margin-top: 0; }
+    .table-head, .rank-row { grid-template-columns: 40px 1fr 80px 70px; }
+    .table-head .h-cat, .rank-row .cat-cell,
+    .table-head .h-chg, .rank-row .change-cell { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-left">
+      <div class="label">◉ Live Rankings</div>
+      <h1>NEET <em>2025</em><br>Leaderboard</h1>
+    </div>
+    <div class="header-meta">
+      <strong>720 / 720</strong>
+      Max Score
+      <br>
+      Updated: 04 Jun 2025
+    </div>
+  </header>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">Total Candidates</div>
+      <div class="stat-value">24,06,079</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Qualified</div>
+      <div class="stat-value green">13,16,268</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Cutoff (Gen)</div>
+      <div class="stat-value cyan">137</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Toppers (720/720)</div>
+      <div class="stat-value amber">67</div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <span class="filter-label">Filter —</span>
+    <button class="filter-btn active" onclick="filterCat('ALL',this)">All</button>
+    <button class="filter-btn" onclick="filterCat('GEN',this)">General</button>
+    <button class="filter-btn" onclick="filterCat('OBC',this)">OBC</button>
+    <button class="filter-btn" onclick="filterCat('SC',this)">SC</button>
+    <button class="filter-btn" onclick="filterCat('ST',this)">ST</button>
+    <button class="filter-btn" onclick="filterCat('EWS',this)">EWS</button>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="searchInput" placeholder="Search candidate…" oninput="searchRows(this.value)" />
+    </div>
+  </div>
+
+  <!-- PODIUM (top 3) -->
+  <div class="podium" id="podium">
+    <!-- Filled by JS -->
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap" id="tableWrap">
+    <div class="table-head">
+      <span>Rank</span>
+      <span>Candidate</span>
+      <span>Score</span>
+      <span>Percentile</span>
+      <span class="h-cat">Category</span>
+      <span class="h-chg">Change</span>
+    </div>
+    <div id="rankBody"></div>
+  </div>
+
+  <!-- SUBJECT BREAKDOWN -->
+  <div class="breakdown">
+    <div class="breakdown-card">
+      <div class="breakdown-title">Topper Subject Scores (avg)</div>
+      <div class="subject-row">
+        <span class="subject-name">Biology</span>
+        <div class="subj-bar-outer"><div class="subj-bar bio" style="width:96%"></div></div>
+        <span class="subject-score">346 / 360</span>
+      </div>
+      <div class="subject-row">
+        <span class="subject-name">Chemistry</span>
+        <div class="subj-bar-outer"><div class="subj-bar chem" style="width:90%"></div></div>
+        <span class="subject-score">324 / 360</span>
+      </div>
+      <div class="subject-row">
+        <span class="subject-name">Physics</span>
+        <div class="subj-bar-outer"><div class="subj-bar phys" style="width:83%"></div></div>
+        <span class="subject-score">299 / 360</span>
+      </div>
+    </div>
+    <div class="breakdown-card">
+      <div class="breakdown-title">Score Distribution</div>
+      <div class="subject-row">
+        <span class="subject-name">600 – 720</span>
+        <div class="subj-bar-outer"><div class="subj-bar bio" style="width:8%"></div></div>
+        <span class="subject-score">12,041</span>
+      </div>
+      <div class="subject-row">
+        <span class="subject-name">500 – 599</span>
+        <div class="subj-bar-outer"><div class="subj-bar chem" style="width:38%"></div></div>
+        <span class="subject-score">1,04,229</span>
+      </div>
+      <div class="subject-row">
+        <span class="subject-name">400 – 499</span>
+        <div class="subj-bar-outer"><div class="subj-bar phys" style="width:60%"></div></div>
+        <span class="subject-score">2,87,601</span>
+      </div>
+      <div class="subject-row">
+        <span class="subject-name">Below 400</span>
+        <div class="subj-bar-outer"><div class="subj-bar" style="width:100%; background:var(--danger)"></div></div>
+        <span class="subject-score">20,02,208</span>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Data is illustrative. Official results: nta.ac.in &nbsp;·&nbsp; NTA NEET 2025</p>
+    <span class="tag">NEET-UG 2025</span>
+  </footer>
+
+</div>
+
+<script>
+const COLORS = [
+  ['rgba(74,222,128,0.15)','#4ade80'],
+  ['rgba(34,211,238,0.15)','#22d3ee'],
+  ['rgba(251,191,36,0.15)','#fbbf24'],
+  ['rgba(244,114,182,0.15)','#f9a8d4'],
+  ['rgba(165,180,252,0.15)','#a5b4fc'],
+  ['rgba(252,165,165,0.15)','#fca5a5'],
+  ['rgba(110,231,183,0.15)','#6ee7b7'],
+  ['rgba(196,181,253,0.15)','#c4b5fd'],
+];
+
+const STATES = ['Rajasthan','Maharashtra','UP','Delhi','AP','Tamil Nadu','Karnataka','Kerala','MP','Gujarat'];
+const CATS = ['GEN','OBC','SC','ST','EWS'];
+const CHANGES = ['+2','+5','-1','—','+12','-3','+1','—','+7','-2'];
+
+function initials(name) { return name.split(' ').slice(0,2).map(n=>n[0]).join(''); }
+
+function avatarStyle(i) {
+  const [bg,col] = COLORS[i % COLORS.length];
+  return `background:${bg}; color:${col}; border: 1px solid ${col}33;`;
+}
+
+const seed = [
+  {name:'Arjun Sharma',state:'Rajasthan',score:720,cat:'GEN'},
+  {name:'Priya Verma',state:'Delhi',score:718,cat:'OBC'},
+  {name:'Ravi Patel',state:'Gujarat',score:716,cat:'GEN'},
+  {name:'Ananya Singh',state:'UP',score:715,cat:'GEN'},
+  {name:'Karthik Menon',state:'Kerala',score:713,cat:'OBC'},
+  {name:'Neha Gupta',state:'Maharashtra',score:712,cat:'SC'},
+  {name:'Siddharth Roy',state:'Karnataka',score:710,cat:'GEN'},
+  {name:'Pooja Reddy',state:'AP',score:709,cat:'EWS'},
+  {name:'Amit Kumar',state:'Bihar',score:707,cat:'OBC'},
+  {name:'Divya Nair',state:'Kerala',score:706,cat:'GEN'},
+  {name:'Rahul Joshi',state:'MP',score:704,cat:'ST'},
+  {name:'Ishita Sen',state:'West Bengal',score:702,cat:'GEN'},
+  {name:'Yash Agarwal',state:'Rajasthan',score:700,cat:'OBC'},
+  {name:'Swati Mishra',state:'UP',score:698,cat:'GEN'},
+  {name:'Varun Kapoor',state:'Delhi',score:697,cat:'EWS'},
+  {name:'Kavya Pillai',state:'Tamil Nadu',score:695,cat:'OBC'},
+  {name:'Nikhil Bose',state:'West Bengal',score:693,cat:'SC'},
+  {name:'Tanya Sharma',state:'Rajasthan',score:691,cat:'GEN'},
+  {name:'Manish Yadav',state:'UP',score:690,cat:'OBC'},
+  {name:'Shriya Iyer',state:'Tamil Nadu',score:688,cat:'GEN'},
+];
+
+const MAX_SCORE = 720;
+
+function pct(score) { return ((score / MAX_SCORE) * 100).toFixed(2); }
+function catClass(cat) {
+  return {GEN:'cat-gen',OBC:'cat-obc',SC:'cat-sc',ST:'cat-st',EWS:'cat-ews'}[cat] || 'cat-gen';
+}
+
+let currentCat = 'ALL';
+let currentSearch = '';
+
+function renderPodium(data) {
+  const top3 = data.slice(0,3);
+  const rankClass = ['rank-1','rank-2','rank-3'];
+  const medals = ['🥇','🥈','🥉'];
+  document.getElementById('podium').innerHTML = top3.map((p,i) => `
+    <div class="podium-card ${rankClass[i]}">
+      <div class="podium-badge">${i+1}</div>
+      <div class="podium-avatar" style="${avatarStyle(i)}">${initials(p.name)}</div>
+      <div class="podium-name">${p.name}</div>
+      <div class="podium-city">${p.state} &nbsp;·&nbsp; ${p.cat}</div>
+      <div class="podium-score">${p.score}</div>
+      <div class="podium-pct">${pct(p.score)}th percentile</div>
+    </div>
+  `).join('');
+}
+
+function renderRows(data) {
+  const rows = data.slice(3);
+  document.getElementById('rankBody').innerHTML = rows.map((p,i) => {
+    const rank = i + 4;
+    const barW = Math.round((p.score / MAX_SCORE) * 100);
+    const chg = CHANGES[i % CHANGES.length];
+    const chgClass = chg.startsWith('+') ? 'up' : chg.startsWith('-') ? 'down' : 'same';
+    return `
+      <div class="rank-row ${rank <= 6 ? 'highlight' : ''}">
+        <span class="rank-num ${rank <= 10 ? 'top' : ''}">#${rank}</span>
+        <div class="rank-person">
+          <div class="avatar" style="${avatarStyle(rank)}">${initials(p.name)}</div>
+          <div>
+            <div class="name">${p.name}</div>
+            <div class="state">${p.state}</div>
+          </div>
+        </div>
+        <div>
+          <span class="score-cell">${p.score}</span>
+          <div class="bar-outer"><div class="bar-inner" style="width:${barW}%"></div></div>
+        </div>
+        <span class="percentile-cell">${pct(p.score)}%</span>
+        <span class="cat-cell"><span class="category-pill ${catClass(p.cat)}">${p.cat}</span></span>
+        <span class="change-cell ${chgClass}">${chg}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function filtered() {
+  return seed.filter(p => {
+    const catOk = currentCat === 'ALL' || p.cat === currentCat;
+    const searchOk = !currentSearch || p.name.toLowerCase().includes(currentSearch.toLowerCase()) || p.state.toLowerCase().includes(currentSearch.toLowerCase());
+    return catOk && searchOk;
+  });
+}
+
+function render() {
+  const data = filtered();
+  renderPodium(data);
+  renderRows(data);
+}
+
+function filterCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function searchRows(val) {
+  currentSearch = val;
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
